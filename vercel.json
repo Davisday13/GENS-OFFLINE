@@ -1,6 +1,7 @@
 {
   "version": 2,
   "buildCommand": "cd productos/erp && npm run build",
+  "outputDirectory": "productos/erp/dist",
   "installCommand": "npm install",
   "functions": {
     "api/index.js": {
