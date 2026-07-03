@@ -11,7 +11,9 @@
     "erp": "cd productos/erp && npm run dev",
     "engage": "cd productos/engage && npm run dev",
     "iniciar": "node scripts/iniciar.js",
-    "setup": "node scripts/iniciar.js --setup"
+    "setup": "node scripts/iniciar.js --setup",
+    "build:erp": "cd productos/erp && npm run build",
+    "copy:dist": "node -e \"const fs=require('fs'),p=require('path');const src=p.join(process.cwd(),'productos/erp/dist');const dst=p.join(process.cwd(),'public');fs.cpSync(src,dst,{recursive:true})\""
   },
   "workspaces": [
     "servidor",
