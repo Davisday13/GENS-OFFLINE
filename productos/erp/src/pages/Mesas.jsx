@@ -40,7 +40,7 @@ export default function Mesas() {
     setCart(prev => {
       const exist = prev.find(i => i.producto_id === prod.id)
       if (exist) return prev.map(i => i.producto_id === prod.id ? { ...i, cantidad: i.cantidad + 1 } : i)
-      return [...prev, { producto_id: prod.id, nombre: prod.nombre, precio: prod.precio, cantidad: 1 }]
+      return [...prev, { producto_id: prod.id, nombre: prod.nombre, precio: prod.precio, cantidad: 1, imagen: prod.imagen || '🍽️' }]
     })
   }
 
@@ -140,6 +140,7 @@ export default function Mesas() {
                 {prodFiltrados.map(prod => (
                   <button key={prod.id} onClick={() => agregarAlCarro(prod)}
                     className="p-3 rounded-xl border border-gray-200 hover:border-brand hover:bg-brand-50/30 text-left transition-colors">
+                    <div className="w-full h-16 flex items-center justify-center text-3xl mb-2 bg-gray-50 rounded-lg">{prod.imagen || '🍽️'}</div>
                     <p className="text-sm font-medium text-gray-900">{prod.nombre}</p>
                     <p className="text-sm font-bold text-brand mt-1">$ {Number(prod.precio).toFixed(2)}</p>
                   </button>
@@ -157,7 +158,7 @@ export default function Mesas() {
                   <div className="space-y-2 mb-3">
                     {cart.map(item => (
                       <div key={item.producto_id} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-700">{item.nombre}</span>
+                        <span className="text-gray-700"><span className="mr-2 text-lg">{item.imagen || '🍽️'}</span>{item.nombre}</span>
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-1">
                             <button onClick={() => quitarDelCarro(item.producto_id)} className="w-5 h-5 rounded bg-gray-200 text-gray-600 text-xs font-bold flex items-center justify-center hover:bg-gray-300">−</button>

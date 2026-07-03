@@ -31,7 +31,7 @@ try {
 
   ['pos_mesas|'+`CREATE TABLE IF NOT EXISTS pos_mesas (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, capacidad INTEGER DEFAULT 4, estado TEXT DEFAULT 'libre')`+'|'+`INSERT OR IGNORE INTO pos_mesas (id,nombre,capacidad) VALUES (1,'Mesa 1',4),(2,'Mesa 2',4),(3,'Mesa 3',6),(4,'Mesa 4',4),(5,'Mesa 5',4),(6,'Mesa 6',6),(7,'Barra',2)`,
    'pos_categorias|'+`CREATE TABLE IF NOT EXISTS pos_categorias (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, icono TEXT)`+'|'+`INSERT OR IGNORE INTO pos_categorias (id,nombre,icono) VALUES (1,'Combos','star'),(2,'Hamburguesas','burger'),(3,'Pollo','chicken'),(4,'Extras','plus'),(5,'Bebidas','drink'),(6,'Postres','cake')`,
-   'pos_productos|'+`CREATE TABLE IF NOT EXISTS pos_productos (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, precio REAL NOT NULL, categoria_id INTEGER, activo INTEGER DEFAULT 1)`+'|'+`INSERT OR IGNORE INTO pos_productos (id,nombre,precio,categoria_id) VALUES (1,'Combo Cuarto de Libra',9.99,1),(2,'Combo Doble',11.99,1),(3,'Combo Pollo',10.49,1),(4,'Combo Infantil',6.99,1),(5,'Hamburguesa Sencilla',4.99,2),(6,'Hamburguesa con Queso',5.99,2),(7,'Hamburguesa Doble',7.99,2),(8,'Hamburguesa BBQ',6.99,2),(9,'Hamburguesa de Pollo',5.49,2),(10,'Pollo Frito (2 pzas)',4.49,3),(11,'Pollo Frito (4 pzas)',7.99,3),(12,'Alitas BBQ (6)',5.99,3),(13,'Alitas BBQ (12)',9.99,3),(14,'Papas Fritas Pequeñas',2.49,4),(15,'Papas Fritas Grandes',3.99,4),(16,'Aros de Cebolla',3.49,4),(17,'Refresco Pequeño',1.99,5),(18,'Refresco Grande',2.99,5),(19,'Agua Embotellada',1.49,5),(20,'Helado Suave',2.49,6),(21,'Batido',3.99,6)`,
+   'pos_productos|'+`CREATE TABLE IF NOT EXISTS pos_productos (id INTEGER PRIMARY KEY, nombre TEXT NOT NULL, precio REAL NOT NULL, categoria_id INTEGER, activo INTEGER DEFAULT 1, imagen TEXT)`+'|'+`INSERT OR IGNORE INTO pos_productos (id,nombre,precio,categoria_id,imagen) VALUES (1,'Combo Cuarto de Libra',9.99,1,'🍔'),(2,'Combo Doble',11.99,1,'🍔'),(3,'Combo Pollo',10.49,1,'🍗'),(4,'Combo Infantil',6.99,1,'🧒'),(5,'Hamburguesa Sencilla',4.99,2,'🍔'),(6,'Hamburguesa con Queso',5.99,2,'🧀'),(7,'Hamburguesa Doble',7.99,2,'🍔'),(8,'Hamburguesa BBQ',6.99,2,'🍖'),(9,'Hamburguesa de Pollo',5.49,2,'🥪'),(10,'Pollo Frito (2 pzas)',4.49,3,'🍗'),(11,'Pollo Frito (4 pzas)',7.99,3,'🍗'),(12,'Alitas BBQ (6)',5.99,3,'🍖'),(13,'Alitas BBQ (12)',9.99,3,'🍖'),(14,'Papas Fritas Pequeñas',2.49,4,'🍟'),(15,'Papas Fritas Grandes',3.99,4,'🍟'),(16,'Aros de Cebolla',3.49,4,'🧅'),(17,'Refresco Pequeño',1.99,5,'🥤'),(18,'Refresco Grande',2.99,5,'🥤'),(19,'Agua Embotellada',1.49,5,'💧'),(20,'Helado Suave',2.49,6,'🍨'),(21,'Batido',3.99,6,'🥤')`,
    'pos_pedidos|'+`CREATE TABLE IF NOT EXISTS pos_pedidos (id INTEGER PRIMARY KEY AUTOINCREMENT, mesa_id INTEGER, estado TEXT DEFAULT 'abierto', total REAL DEFAULT 0, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
    'pos_pedidos_detalle|'+`CREATE TABLE IF NOT EXISTS pos_pedidos_detalle (id INTEGER PRIMARY KEY AUTOINCREMENT, pedido_id INTEGER, producto_id INTEGER, cantidad INTEGER DEFAULT 1, precio REAL)`,
    'facturas|'+`CREATE TABLE IF NOT EXISTS facturas (id INTEGER PRIMARY KEY AUTOINCREMENT, pedido_id INTEGER, total REAL, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
@@ -55,6 +55,29 @@ try {
     const parts = spec.split('|');
     try { db.exec(parts[1]); if (parts[2]) db.exec(parts[2]); } catch (e) { console.error('Seed fail for', parts[0], e.message); }
   });
+  try { db.exec("ALTER TABLE pos_productos ADD COLUMN imagen TEXT"); } catch(e) {}
+  try { db.exec("UPDATE pos_productos SET imagen='🍔' WHERE id=1 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍔' WHERE id=2 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍗' WHERE id=3 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🧒' WHERE id=4 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍔' WHERE id=5 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🧀' WHERE id=6 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍔' WHERE id=7 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍖' WHERE id=8 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🥪' WHERE id=9 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍗' WHERE id=10 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍗' WHERE id=11 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍖' WHERE id=12 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍖' WHERE id=13 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍟' WHERE id=14 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍟' WHERE id=15 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🧅' WHERE id=16 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🥤' WHERE id=17 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🥤' WHERE id=18 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='💧' WHERE id=19 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🍨' WHERE id=20 AND imagen IS NULL");
+    db.exec("UPDATE pos_productos SET imagen='🥤' WHERE id=21 AND imagen IS NULL");
+  } catch(e) {}
   console.log('DB OK');
 } catch(e) {
   console.error('DB fail:', e.message);
