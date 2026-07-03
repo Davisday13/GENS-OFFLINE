@@ -1,0 +1,24 @@
+{
+  "name": "gens-offline",
+  "private": true,
+  "version": "1.0.0",
+  "description": "GENS-OFFLINE — Ecosistema GENS completo, 100% local. Express + SQLite reemplaza Supabase.",
+  "scripts": {
+    "servidor": "node servidor/src/index.js",
+    "contabilidad": "cd productos/contabilidad && npm run dev",
+    "pos": "cd productos/pos && npm run dev",
+    "erp": "cd productos/erp && npm run dev",
+    "engage": "cd productos/engage && npm run dev",
+    "iniciar": "node scripts/iniciar.js",
+    "setup": "node scripts/iniciar.js --setup"
+  },
+  "workspaces": [
+    "servidor",
+    "compartido/fe-hka-pa",
+    "compartido/cliente-api",
+    "productos/contabilidad",
+    "productos/pos",
+    "productos/erp",
+    "productos/engage"
+  ]
+}

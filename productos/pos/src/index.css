@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  @media (min-width: 768px) {
+    html {
+      font-size: 18px;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-verde text-white font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-green-700 active:scale-[0.97] transition-all duration-150 touch-manipulation;
+  }
+
+  .btn-danger {
+    @apply bg-accent-red text-white font-semibold py-3 px-6 rounded-xl shadow-md hover:bg-red-600 active:scale-[0.97] transition-all duration-150 touch-manipulation;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-brand-navy font-semibold py-3 px-6 rounded-xl shadow-md border border-gray-200 hover:bg-gray-50 active:scale-[0.97] transition-all duration-150 touch-manipulation;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-lg p-6;
+  }
+
+  .input {
+    @apply w-full border border-gray-300 rounded-xl px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-brand-verde focus:border-transparent;
+  }
+
+  .badge-libre {
+    @apply bg-accent-green text-white text-xs font-bold px-3 py-1 rounded-full;
+  }
+
+  .badge-ocupada {
+    @apply bg-accent-red text-white text-xs font-bold px-3 py-1 rounded-full;
+  }
+
+  .badge-reservada {
+    @apply bg-accent-yellow text-gray-800 text-xs font-bold px-3 py-1 rounded-full;
+  }
+
+  .badge-pendiente {
+    @apply bg-accent-orange text-white text-xs font-bold px-3 py-1 rounded-full;
+  }
+
+  .badge-completado {
+    @apply bg-accent-green text-white text-xs font-bold px-3 py-1 rounded-full;
+  }
+}

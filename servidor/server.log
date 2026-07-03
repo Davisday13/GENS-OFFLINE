@@ -1,0 +1,2 @@
+GENS Servidor offline corriendo en http://localhost:3001
+Health check: http://localhost:3001/api/health

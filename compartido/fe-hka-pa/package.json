@@ -1,0 +1,15 @@
+{
+  "name": "fe-hka-pa",
+  "version": "1.0.0",
+  "description": "Módulo de Facturación Electrónica DGI Panamá - versión offline simulada",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./documento": "./src/documento.js",
+    "./cliente": "./src/clienteRest.js",
+    "./catalogos": "./src/catalogos.js",
+    "./helpers": "./src/helpers.js"
+  },
+  "private": true
+}

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+*.db
+*.sqlite
+servidor/data/
+apks/*.apk
+.DS_Store
+Thumbs.db

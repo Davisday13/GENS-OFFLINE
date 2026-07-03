@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motor Fiscal - GENS Offline</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#1E4FFF', navy: '#0A1E3C' },
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+        },
+      },
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-[Inter]">
+  <div id="app" class="min-h-screen flex">
+    <aside class="w-64 bg-[#0A1E3C] text-white p-6 flex flex-col">
+      <h1 class="text-2xl font-bold mb-8">Motor Fiscal</h1>
+      <nav class="flex flex-col gap-2 flex-1">
+        <button onclick="navegar('estado')" class="nav-btn text-left px-4 py-3 rounded-lg hover:bg-white/10 transition" data-page="estado">Estado</button>
+        <button onclick="navegar('emitir')" class="nav-btn text-left px-4 py-3 rounded-lg hover:bg-white/10 transition" data-page="emitir">Emitir</button>
+        <button onclick="navegar('firmar')" class="nav-btn text-left px-4 py-3 rounded-lg hover:bg-white/10 transition" data-page="firmar">Firmar</button>
+        <button onclick="navegar('anular')" class="nav-btn text-left px-4 py-3 rounded-lg hover:bg-white/10 transition" data-page="anular">Anular</button>
+        <button onclick="navegar('cola')" class="nav-btn text-left px-4 py-3 rounded-lg hover:bg-white/10 transition" data-page="cola">Cola Offline</button>
+        <button onclick="navegar('reportes')" class="nav-btn text-left px-4 py-3 rounded-lg hover:bg-white/10 transition" data-page="reportes">Reportes X/Z</button>
+      </nav>
+      <div class="text-xs text-gray-400 mt-4">v1.1.0 · Offline</div>
+    </aside>
+    <main class="flex-1 p-8" id="content">
+      <div class="text-center text-gray-500 mt-20">
+        <h2 class="text-2xl font-bold text-[#0A1E3C]">Motor Fiscal Offline</h2>
+        <p class="mt-2">Selecciona una opción del menú</p>
+        <div id="status-badge" class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-800">
+          <span class="w-2 h-2 rounded-full bg-green-500"></span>
+          Servidor conectado
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3001/api/motor-fiscal';
+
+    function navegar(page) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('bg-white/10'));
+      document.querySelector(`[data-page="${page}"]`)?.classList.add('bg-white/10');
+      const pages = { estado: renderEstado, emitir: renderEmitir, firmar: renderFirmar, anular: renderAnular, cola: renderCola, reportes: renderReportes };
+      if (pages[page]) pages[page]();
+    }
+
+    async function apiFetch(path, opts = {}) {
+      const token = localStorage.getItem('gens_token');
+      const headers = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+      const res = await fetch(`${API}${path}`, { ...opts, headers });
+      return res.json();
+    }
+
+    async function renderEstado() {
+      const data = await apiFetch('/estado');
+      document.getElementById('content').innerHTML = `
+        <h2 class="text-2xl font-bold text-[#0A1E3C] mb-6">Estado del Motor Fiscal</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-white p-6 rounded-xl shadow">Estado: <strong>${data.status}</strong></div>
+          <div class="bg-white p-6 rounded-xl shadow">Versión: <strong>${data.version}</strong></div>
+          <div class="bg-white p-6 rounded-xl shadow">Modo: <strong>${data.modo}</strong></div>
+          <div class="bg-white p-6 rounded-xl shadow">Cola pendiente: <strong>${data.cola_pendiente}</strong></div>
+        </div>
+      `;
+    }
+
+    function renderEmitir() {
+      document.getElementById('content').innerHTML = `
+        <h2 class="text-2xl font-bold text-[#0A1E3C] mb-6">Emitir Documento</h2>
+        <div class="bg-white p-6 rounded-xl shadow max-w-lg">
+          <div class="mb-4"><label class="block text-sm font-medium mb-1">RUC</label><input id="f-ruc" class="w-full border rounded-lg px-3 py-2" value="123456-1-123456"/></div>
+          <div class="mb-4"><label class="block text-sm font-medium mb-1">Cliente</label><input id="f-cliente" class="w-full border rounded-lg px-3 py-2" value="Cliente Demo"/></div>
+          <div class="mb-4"><label class="block text-sm font-medium mb-1">Total (USD)</label><input id="f-total" class="w-full border rounded-lg px-3 py-2" type="number" value="100.00"/></div>
+          <button onclick="emitirDoc()" class="bg-[#1E4FFF] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Emitir</button>
+          <pre id="f-resultado" class="mt-4 bg-gray-50 p-4 rounded-lg text-sm hidden"></pre>
+        </div>
+      `;
+    }
+
+    async function emitirDoc() {
+      const body = { documento: { ruc: document.getElementById('f-ruc').value, cliente: document.getElementById('f-cliente').value, total: parseFloat(document.getElementById('f-total').value) } };
+      const res = await apiFetch('/emitir', { method: 'POST', body: JSON.stringify(body) });
+      document.getElementById('f-resultado').classList.remove('hidden');
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    function renderFirmar() {
+      document.getElementById('content').innerHTML = `
+        <h2 class="text-2xl font-bold text-[#0A1E3C] mb-6">Firmar Documento</h2>
+        <div class="bg-white p-6 rounded-xl shadow max-w-lg">
+          <div class="mb-4"><label class="block text-sm font-medium mb-1">Documento (JSON)</label><textarea id="f-doc" class="w-full border rounded-lg px-3 py-2 h-32">{"tipo":"factura","total":150.00}</textarea></div>
+          <button onclick="firmarDoc()" class="bg-[#1E4FFF] text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Firmar</button>
+          <pre id="f-resultado" class="mt-4 bg-gray-50 p-4 rounded-lg text-sm hidden"></pre>
+        </div>
+      `;
+    }
+
+    async function firmarDoc() {
+      const body = { documento: JSON.parse(document.getElementById('f-doc').value) };
+      const res = await apiFetch('/firmar', { method: 'POST', body: JSON.stringify(body) });
+      document.getElementById('f-resultado').classList.remove('hidden');
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    function renderAnular() {
+      document.getElementById('content').innerHTML = `
+        <h2 class="text-2xl font-bold text-[#0A1E3C] mb-6">Anular Documento</h2>
+        <div class="bg-white p-6 rounded-xl shadow max-w-lg">
+          <div class="mb-4"><label class="block text-sm font-medium mb-1">CUFE</label><input id="f-cufe" class="w-full border rounded-lg px-3 py-2" placeholder="CUFE-OFFLINE-XXXXXXXXXXXX"/></div>
+          <button onclick="anularDoc()" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition">Anular</button>
+          <pre id="f-resultado" class="mt-4 bg-gray-50 p-4 rounded-lg text-sm hidden"></pre>
+        </div>
+      `;
+    }
+
+    async function anularDoc() {
+      const body = { cufe: document.getElementById('f-cufe').value };
+      const res = await apiFetch('/anular', { method: 'POST', body: JSON.stringify(body) });
+      document.getElementById('f-resultado').classList.remove('hidden');
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    function renderCola() {
+      document.getElementById('content').innerHTML = `
+        <h2 class="text-2xl font-bold text-[#0A1E3C] mb-6">Cola Offline</h2>
+        <div class="flex gap-4 mb-6">
+          <button onclick="agregarCola()" class="bg-[#1E4FFF] text-white px-4 py-2 rounded-lg hover:bg-blue-700">Agregar a Cola</button>
+          <button onclick="procesarCola()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Procesar Cola</button>
+          <button onclick="verCola()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">Ver Cola</button>
+        </div>
+        <pre id="f-resultado" class="bg-white p-6 rounded-xl shadow text-sm"></pre>
+      `;
+      verCola();
+    }
+
+    async function agregarCola() {
+      const res = await apiFetch('/cola', { method: 'POST', body: JSON.stringify({ documento: { tipo: 'factura', total: Math.random() * 500 } }) });
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    async function procesarCola() {
+      const res = await apiFetch('/cola/procesar', { method: 'POST' });
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    async function verCola() {
+      const res = await apiFetch('/cola');
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    function renderReportes() {
+      document.getElementById('content').innerHTML = `
+        <h2 class="text-2xl font-bold text-[#0A1E3C] mb-6">Reportes X / Z</h2>
+        <div class="flex gap-4 mb-6">
+          <button onclick="verReporteX()" class="bg-[#1E4FFF] text-white px-6 py-3 rounded-lg hover:bg-blue-700">Reporte X</button>
+          <button onclick="verReporteZ()" class="bg-[#0A1E3C] text-white px-6 py-3 rounded-lg hover:bg-gray-800">Reporte Z (Cierre)</button>
+        </div>
+        <pre id="f-resultado" class="bg-white p-6 rounded-xl shadow text-sm"></pre>
+      `;
+    }
+
+    async function verReporteX() {
+      const res = await apiFetch('/reporteX');
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+
+    async function verReporteZ() {
+      const res = await apiFetch('/reporteZ');
+      document.getElementById('f-resultado').textContent = JSON.stringify(res, null, 2);
+    }
+  </script>
+</body>
+</html>

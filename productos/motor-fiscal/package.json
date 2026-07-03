@@ -1,0 +1,13 @@
+{
+  "name": "motor-fiscal",
+  "private": true,
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve . -p 3005",
+    "start": "npx serve . -p 3005"
+  },
+  "dependencies": {
+    "fe-hka-pa": "file:../../compartido/fe-hka-pa"
+  }
+}

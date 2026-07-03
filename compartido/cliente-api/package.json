@@ -1,0 +1,8 @@
+{
+  "name": "cliente-api",
+  "version": "1.0.0",
+  "description": "Cliente API local para GENS-OFFLINE (reemplaza @supabase/supabase-js)",
+  "type": "module",
+  "main": "src/index.js",
+  "private": true
+}
