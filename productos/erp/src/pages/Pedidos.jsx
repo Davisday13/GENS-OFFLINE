@@ -23,7 +23,7 @@ export default function Pedidos() {
     if (filter !== 'todos' && p.estado !== filter) return false
     if (search) {
       const s = search.toLowerCase()
-      return p.id?.toLowerCase().includes(s) || (p.mesa_id || '').toLowerCase().includes(s)
+      return String(p.id ?? '').toLowerCase().includes(s) || String(p.mesa_id ?? '').toLowerCase().includes(s)
     }
     return true
   })
@@ -105,7 +105,7 @@ export default function Pedidos() {
             <div className="flex items-start justify-between mb-3">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold text-gray-900">#{p.id?.slice(0, 8)}</span>
+                  <span className="text-lg font-bold text-gray-900">#{String(p.id ?? '').slice(0, 8)}</span>
                   <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${p.estado === 'abierto' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
                     {p.estado}
                   </span>

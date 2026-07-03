@@ -13,7 +13,7 @@ export default function QRs() {
     fetch(`${BASE}/engage/qrs`).then(r => r.json()).then(setQrs).catch(() => {})
   }, [])
 
-  const filtered = qrs.filter($ => q.nombre?.toLowerCase().includes(search.toLowerCase()))
+  const filtered = qrs.filter(q => q.nombre?.toLowerCase().includes(search.toLowerCase()))
   const totalScans = qrs.reduce((s, q) => s + Number(q.escaneos || 0), 0)
 
   const handleCreate = async () => {
@@ -47,7 +47,7 @@ export default function QRs() {
         </div>
         <div className="card flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center"><ExternalLink className="w-6 h-6 text-white" /></div>
-          <div><p className="text-sm text-gray-500">Activos</p><p className="text-xl font-bold text-gray-900">{qrs.filter($ => q.activo).length}</p></div>
+          <div><p className="text-sm text-gray-500">Activos</p><p className="text-xl font-bold text-gray-900">{qrs.filter(q => q.activo).length}</p></div>
         </div>
       </div>
       <div className="card">
@@ -58,7 +58,7 @@ export default function QRs() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.length === 0 ? (
             <div className="col-span-full text-center py-8 text-gray-400">Sin QRs registrados</div>
-          ) : filtered.map($ => (
+          ) : filtered.map(q => (
             <div key={q.id} className="card border-t-4" style={{ borderTopColor: q.color || '#003153' }}>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-gray-900">{q.nombre}</h3>

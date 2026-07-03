@@ -60,7 +60,7 @@ export default function Cocina() {
                   <div>
                     <span className="text-lg font-bold text-gray-900">#{p.id?.slice(0, 8)}</span>
                     <span className="ml-2 text-sm text-gray-500">
-                      <Coffee className="w-3 h-3 inline mr-1" />{p.mesa_id ? `Mesa ${p.mesa_id.slice(0, 8)}` : 'Mostrador'}
+                      <Coffee className="w-3 h-3 inline mr-1" />{p.mesa_id ? `Mesa ${String(p.mesa_id).slice(0, 8)}` : 'Mostrador'}
                     </span>
                   </div>
                   <span className="text-xs text-gray-400">{p.created_at?.slice(11, 19) || '—'}</span>

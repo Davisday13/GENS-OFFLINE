@@ -43,7 +43,13 @@ try {
    'clientes|'+`CREATE TABLE IF NOT EXISTS clientes (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT NOT NULL, telefono TEXT, email TEXT)`+'|'+`INSERT OR IGNORE INTO clientes (id,nombre,telefono) VALUES (1,'Cliente General','000-0000'),(2,'Cliente Corporativo','000-0001')`,
    'roles|'+`CREATE TABLE IF NOT EXISTS roles (id TEXT PRIMARY KEY, nombre TEXT NOT NULL)`+'|'+`INSERT OR IGNORE INTO roles (id,nombre) VALUES ('rol-admin','Administrador'),('rol-cajero','Cajero'),('rol-cocina','Cocina'),('rol-mesero','Mesero')`,
    'usuarios|'+`CREATE TABLE IF NOT EXISTS usuarios (id TEXT PRIMARY KEY, nombre TEXT NOT NULL, email TEXT UNIQUE, password TEXT, rol_id TEXT)`+'|'+`INSERT OR IGNORE INTO usuarios (id,nombre,email,password,rol_id) VALUES ('usr-admin','Admin','admin@gens.com','admin123','rol-admin'),('usr-cajero','Cajero Demo','cajero@gens.com','cajero123','rol-cajero')`,
-   'cuentas_contables|'+`CREATE TABLE IF NOT EXISTS cuentas_contables (id INTEGER PRIMARY KEY, codigo TEXT UNIQUE, nombre TEXT NOT NULL, tipo TEXT DEFAULT 'activo')`+'|'+`INSERT OR IGNORE INTO cuentas_contables (id,codigo,nombre,tipo) VALUES (1,'1101','Caja','activo'),(2,'1102','Bancos','activo'),(3,'1201','Inventario','activo'),(4,'1202','Cuentas por Cobrar','activo'),(5,'2101','Cuentas por Pagar','pasivo'),(6,'3101','Capital','patrimonio'),(7,'4101','Ventas','ingreso'),(8,'5101','Costo de Ventas','gasto'),(9,'5102','Gastos Operativos','gasto')`
+     'cuentas_contables|'+`CREATE TABLE IF NOT EXISTS cuentas_contables (id INTEGER PRIMARY KEY, codigo TEXT UNIQUE, nombre TEXT NOT NULL, tipo TEXT DEFAULT 'activo')`+'|'+`INSERT OR IGNORE INTO cuentas_contables (id,codigo,nombre,tipo) VALUES (1,'1101','Caja','activo'),(2,'1102','Bancos','activo'),(3,'1201','Inventario','activo'),(4,'1202','Cuentas por Cobrar','activo'),(5,'2101','Cuentas por Pagar','pasivo'),(6,'3101','Capital','patrimonio'),(7,'4101','Ventas','ingreso'),(8,'5101','Costo de Ventas','gasto'),(9,'5102','Gastos Operativos','gasto')`,
+'pos_cierres|'+`CREATE TABLE IF NOT EXISTS pos_cierres (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT, tipo TEXT DEFAULT 'Z', total_ventas REAL DEFAULT 0, total_itbms REAL DEFAULT 0, formas_pago TEXT, conteo_billetes TEXT, diferencia REAL DEFAULT 0, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
+'finanzas_asientos|'+`CREATE TABLE IF NOT EXISTS finanzas_asientos (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, fecha TEXT, tipo TEXT DEFAULT 'general', descripcion TEXT, referencia TEXT, cuenta TEXT, debe REAL DEFAULT 0, haber REAL DEFAULT 0, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
+'contabilidad_arqueos|'+`CREATE TABLE IF NOT EXISTS contabilidad_arqueos (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT, monto_sistema REAL DEFAULT 0, monto_contado REAL DEFAULT 0, diferencia REAL DEFAULT 0, observaciones TEXT, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
+'contabilidad_conciliacion|'+`CREATE TABLE IF NOT EXISTS contabilidad_conciliacion (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT, tipo TEXT DEFAULT 'banco', descripcion TEXT, monto REAL DEFAULT 0, estado TEXT DEFAULT 'pendiente', creado_en TEXT DEFAULT (datetime('now','localtime')))`,
+'engage_qrs|'+`CREATE TABLE IF NOT EXISTS engage_qrs (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, url_destino TEXT, color TEXT DEFAULT '#003153', escaneos INTEGER DEFAULT 0, activo INTEGER DEFAULT 1, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
+'engage_menu_items|'+`CREATE TABLE IF NOT EXISTS engage_menu_items (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, descripcion TEXT, precio REAL DEFAULT 0, categoria TEXT DEFAULT 'General', disponible INTEGER DEFAULT 1, creado_en TEXT DEFAULT (datetime('now','localtime')))`
   ].forEach(spec => {
     const parts = spec.split('|');
     try { db.exec(parts[1]); if (parts[2]) db.exec(parts[2]); } catch (e) { console.error('Seed fail for', parts[0], e.message); }
@@ -107,7 +113,13 @@ app.post('/api/pos/pedidos', authMw, (req, res) => {
 });
 app.get('/api/pos/pedidos', authMw, (req, res) => {
   if (!db) return res.json([]);
-  const pedidos = db.prepare('SELECT p.*, m.nombre as mesa_nombre FROM pos_pedidos p JOIN pos_mesas m ON p.mesa_id = m.id ORDER BY p.creado_en DESC').all();
+  const estado = req.query.estado;
+  let pedidos;
+  if (estado) {
+    pedidos = db.prepare('SELECT p.*, m.nombre as mesa_nombre FROM pos_pedidos p JOIN pos_mesas m ON p.mesa_id = m.id WHERE p.estado = ? ORDER BY p.creado_en DESC').all(estado);
+  } else {
+    pedidos = db.prepare('SELECT p.*, m.nombre as mesa_nombre FROM pos_pedidos p JOIN pos_mesas m ON p.mesa_id = m.id ORDER BY p.creado_en DESC').all();
+  }
   pedidos.forEach(p => {
     p.items = db.prepare('SELECT ppd.*, pp.nombre FROM pos_pedidos_detalle ppd JOIN pos_productos pp ON ppd.producto_id = pp.id WHERE ppd.pedido_id = ?').all(p.id);
   });
@@ -149,6 +161,16 @@ app.get('/api/pos/pedidos/ventas-semana', authMw, (req, res) => {
 app.get('/api/pos/facturas/recientes', authMw, (req, res) => {
   if (!db) return res.json([]);
   res.json(db.prepare('SELECT f.*, m.nombre as mesa FROM facturas f JOIN pos_pedidos p ON f.pedido_id = p.id JOIN pos_mesas m ON p.mesa_id = m.id ORDER BY f.creado_en DESC LIMIT 10').all());
+});
+app.get('/api/pos/cierres', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM pos_cierres ORDER BY creado_en DESC').all());
+});
+app.post('/api/pos/cierres', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { fecha, tipo, total_ventas, total_itbms, formas_pago, conteo_billetes, diferencia } = req.body;
+  const r = db.prepare('INSERT INTO pos_cierres (fecha, tipo, total_ventas, total_itbms, formas_pago, conteo_billetes, diferencia) VALUES (?, ?, ?, ?, ?, ?, ?)').run(fecha, tipo||'Z', total_ventas||0, total_itbms||0, JSON.stringify(formas_pago||{}), JSON.stringify(conteo_billetes||{}), diferencia||0);
+  res.json({ id: r.lastInsertRowid });
 });
 
 // Auth
@@ -195,16 +217,54 @@ app.get('/api/contabilidad/cuentas', authMw, (req, res) => {
   if (!db) return res.json([]);
   res.json(db.prepare('SELECT * FROM cuentas_contables ORDER BY codigo').all());
 });
-app.get('/api/contabilidad/asientos', authMw, (req, res) => {
-  if (!db) return res.json([]);
-  res.json([]); // placeholder
-});
 app.get('/api/contabilidad/balance', authMw, (req, res) => {
   if (!db) return res.json({ total_activos: 0, total_pasivos: 0, total_patrimonio: 0 });
   const activos = db.prepare("SELECT COALESCE(SUM(monto),0) as t FROM cuentas_contables WHERE tipo='activo'").get().t;
   const pasivos = db.prepare("SELECT COALESCE(SUM(monto),0) as t FROM cuentas_contables WHERE tipo='pasivo'").get().t;
   const patrimonio = db.prepare("SELECT COALESCE(SUM(monto),0) as t FROM cuentas_contables WHERE tipo='patrimonio'").get().t;
   res.json({ total_activos: activos, total_pasivos: pasivos, total_patrimonio: patrimonio });
+});
+app.get('/api/contabilidad/gastos', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM gastos ORDER BY fecha DESC').all());
+});
+app.post('/api/contabilidad/gastos', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { descripcion, monto, categoria, fecha, metodo_pago, proveedor } = req.body;
+  const r = db.prepare('INSERT INTO gastos (descripcion, monto, categoria, fecha) VALUES (?, ?, ?, COALESCE(?, date("now","localtime")))').run(descripcion, monto, categoria, fecha);
+  res.json({ id: r.lastInsertRowid });
+});
+app.get('/api/contabilidad/arqueos', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM contabilidad_arqueos ORDER BY creado_en DESC').all());
+});
+app.post('/api/contabilidad/arqueos', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { fecha, monto_sistema, monto_contado, diferencia, observaciones } = req.body;
+  const r = db.prepare('INSERT INTO contabilidad_arqueos (fecha, monto_sistema, monto_contado, diferencia, observaciones) VALUES (?, ?, ?, ?, ?)').run(fecha, monto_sistema||0, monto_contado||0, diferencia||0, observaciones||'');
+  res.json({ id: r.lastInsertRowid });
+});
+app.get('/api/contabilidad/conciliacion', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM contabilidad_conciliacion ORDER BY creado_en DESC').all());
+});
+app.post('/api/contabilidad/conciliacion', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { fecha, tipo, descripcion, monto, estado } = req.body;
+  const r = db.prepare('INSERT INTO contabilidad_conciliacion (fecha, tipo, descripcion, monto, estado) VALUES (?, ?, ?, ?, ?)').run(fecha, tipo||'banco', descripcion, monto||0, estado||'pendiente');
+  res.json({ id: r.lastInsertRowid });
+});
+
+// Finanzas
+app.get('/api/finanzas/asientos', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM finanzas_asientos ORDER BY creado_en DESC').all());
+});
+app.post('/api/finanzas/asientos', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { fecha, tipo, descripcion, referencia, cuenta, debe, haber } = req.body;
+  const r = db.prepare('INSERT INTO finanzas_asientos (numero, fecha, tipo, descripcion, referencia, cuenta, debe, haber) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(Date.now().toString(36).toUpperCase(), fecha, tipo||'general', descripcion, referencia||'', cuenta||'', debe||0, haber||0);
+  res.json({ id: r.lastInsertRowid, numero: Date.now().toString(36).toUpperCase() });
 });
 
 // Gastos
@@ -306,6 +366,26 @@ app.get('/api/recetas', authMw, (req, res) => {
 app.get('/api/engage/campanas', authMw, (req, res) => {
   if (!db) return res.json([]);
   res.json([]); // placeholder
+});
+app.get('/api/engage/qrs', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM engage_qrs ORDER BY creado_en DESC').all());
+});
+app.post('/api/engage/qrs', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { nombre, url_destino, color } = req.body;
+  const r = db.prepare('INSERT INTO engage_qrs (nombre, url_destino, color) VALUES (?, ?, ?)').run(nombre, url_destino, color||'#003153');
+  res.json({ id: r.lastInsertRowid });
+});
+app.get('/api/engage/menu-items', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM engage_menu_items ORDER BY creado_en DESC').all());
+});
+app.post('/api/engage/menu-items', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { nombre, descripcion, precio, categoria, disponible } = req.body;
+  const r = db.prepare('INSERT INTO engage_menu_items (nombre, descripcion, precio, categoria, disponible) VALUES (?, ?, ?, ?, ?)').run(nombre, descripcion, precio||0, categoria||'General', disponible!=null?disponible:1);
+  res.json({ id: r.lastInsertRowid });
 });
 
 // Motor Fiscal
