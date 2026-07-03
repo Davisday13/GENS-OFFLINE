@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 let db;
 try {
   const Database = _require('better-sqlite3');
-  const dir_ = process.env.VERCEL === '1' ? '/tmp/gens-db' : path.join(__dirname, '..', 'servidor', 'data');
+  const dir_ = process.env.VERCEL === '1' ? '/tmp/gens-db' : 'C:\\Users\\DAVIS\\Desktop';
   if (!fs.existsSync(dir_)) fs.mkdirSync(dir_, { recursive: true });
   db = new Database(path.join(dir_, 'gens.db'));
   db.pragma('journal_mode = WAL');

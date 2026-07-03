@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.join(__dirname, '..', 'data');
+const DATA_DIR = 'C:\\Users\\DAVIS\\Desktop';
 
 let db;
 

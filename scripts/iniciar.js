@@ -97,7 +97,7 @@ async function main() {
   console.log('║     GENS-OFFLINE · Inicio del sistema    ║');
   console.log('╚══════════════════════════════════════════╝\n');
 
-  if (!fs.existsSync(path.join(RAÍZ, 'servidor', 'data', 'gens.db'))) {
+  if (!fs.existsSync('C:\\Users\\DAVIS\\Desktop\\GENS.db')) {
     await hacerSeed();
   }
 
