@@ -18,13 +18,31 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '..', 'data');
 const DB_PATH = path.join(DATA_DIR, 'gens.db');
 
+function getWritablePath() {
+  const isVercel = process.env.VERCEL === '1' || !fs.existsSync(DATA_DIR) && process.env.TMPDIR;
+  if (isVercel) {
+    const tmpDir = path.join('/tmp', 'gens-data');
+    const tmpDb = path.join(tmpDir, 'gens.db');
+    if (!fs.existsSync(tmpDir)) {
+      fs.mkdirSync(tmpDir, { recursive: true });
+      if (fs.existsSync(DB_PATH)) {
+        fs.copyFileSync(DB_PATH, tmpDb);
+      }
+    }
+    return tmpDir;
+  }
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  return DATA_DIR;
+}
+
 let db;
 
 export function getDb() {
   if (!db) {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    db = new DatabaseSync(DB_PATH);
-    db.exec('PRAGMA journal_mode=WAL');
+    const dir = getWritablePath();
+    const dbPath = path.join(dir, 'gens.db');
+    db = new DatabaseSync(dbPath);
+    try { db.exec('PRAGMA journal_mode=WAL'); } catch (e) { /* readonly ok */ }
     db.exec('PRAGMA foreign_keys=ON');
   }
   return db;
