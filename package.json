@@ -2,6 +2,7 @@
   "name": "gens-offline",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "description": "GENS-OFFLINE — Ecosistema GENS completo, 100% local. Express + SQLite reemplaza Supabase.",
   "scripts": {
     "servidor": "node servidor/src/index.js",
