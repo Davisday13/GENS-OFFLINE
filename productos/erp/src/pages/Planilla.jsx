@@ -34,7 +34,7 @@ export default function Planilla() {
         <div className="flex items-center gap-3">
           <div className="text-right">
             <p className="text-xs text-gray-500">Total a pagar</p>
-            <p className="text-lg font-bold text-gray-900">Q {totalPagar.toLocaleString()}</p>
+            <p className="text-lg font-bold text-gray-900">$ {totalPagar.toLocaleString()}</p>
           </div>
           <button className="btn-primary"><Calculator className="w-4 h-4" /> Calcular Todo</button>
         </div>
@@ -70,10 +70,10 @@ export default function Planilla() {
                 <tr key={p.id} className="table-row">
                   <td className="px-3 py-2.5 font-medium text-gray-900">{p.empleado}</td>
                   <td className="px-3 py-2.5 text-gray-600">{p.cargo}</td>
-                  <td className="px-3 py-2.5 text-right">Q {p.salarioBase.toLocaleString()}</td>
-                  <td className="px-3 py-2.5 text-right text-green-600">+ Q {p.bonificacion.toLocaleString()}</td>
-                  <td className="px-3 py-2.5 text-right text-red-600">- Q {p.descuentos.toLocaleString()}</td>
-                  <td className="px-3 py-2.5 text-right font-bold">Q {p.total.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right">$ {p.salarioBase.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right text-green-600">+ $ {p.bonificacion.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right text-red-600">- $ {p.descuentos.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right font-bold">$ {p.total.toLocaleString()}</td>
                   <td className="px-3 py-2.5 text-center">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                       p.estado === 'Pagada' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'

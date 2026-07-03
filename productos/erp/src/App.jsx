@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   LayoutDashboard, ShoppingCart, FileText, Users, Package,
   Warehouse, Truck, Building2, UserCircle, Settings,
   Bell, ChevronRight, Menu, X, DollarSign, ClipboardList,
-  BarChart3, LogOut
+  BarChart3, LogOut, ChefHat, Receipt, TrendingUp, Coffee,
+  UtensilsCrossed, ListOrdered, Monitor, Wallet, BookOpen,
+  Banknote, QrCode, PieChart, Calendar
 } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Productos from './pages/Productos'
@@ -15,6 +17,21 @@ import Facturas from './pages/Facturas'
 import Ventas from './pages/Ventas'
 import Compras from './pages/Compras'
 import Planilla from './pages/Planilla'
+import Recetas from './pages/Recetas'
+import CierreZ from './pages/CierreZ'
+import MenuEngineering from './pages/MenuEngineering'
+import Mesas from './pages/Mesas'
+import Pedidos from './pages/Pedidos'
+import Cocina from './pages/Cocina'
+import Caja from './pages/Caja'
+import Reportes from './pages/Reportes'
+import Asientos from './pages/Asientos'
+import Gastos from './pages/Gastos'
+import Arqueos from './pages/Arqueos'
+import Conciliacion from './pages/Conciliacion'
+import QRs from './pages/QRs'
+import MenuDigital from './pages/MenuDigital'
+import Analytics from './pages/Analytics'
 
 const navigation = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -28,6 +45,24 @@ const navigation = [
     ],
   },
   {
+    section: 'Restaurante',
+    items: [
+      { id: 'mesas', label: 'Mapa de Mesas', icon: Coffee },
+      { id: 'pedidos', label: 'Pedidos', icon: ListOrdered },
+      { id: 'cocina', label: 'Cocina KDS', icon: Monitor },
+      { id: 'caja', label: 'Caja', icon: Wallet },
+      { id: 'cierrez', label: 'Cierres Z/X', icon: Receipt },
+    ],
+  },
+  {
+    section: 'Cocina & Recetas',
+    items: [
+      { id: 'recetas', label: 'Recetas', icon: ChefHat },
+      { id: 'menu-engineering', label: 'Menú Engineering', icon: TrendingUp },
+      { id: 'menu-digital', label: 'Menú Digital', icon: UtensilsCrossed },
+    ],
+  },
+  {
     section: 'Operaciones',
     items: [
       { id: 'inventario', label: 'Inventario', icon: Warehouse },
@@ -37,9 +72,31 @@ const navigation = [
     ],
   },
   {
+    section: 'Contabilidad',
+    items: [
+      { id: 'asientos', label: 'Asientos', icon: BookOpen },
+      { id: 'gastos', label: 'Gastos', icon: Wallet },
+      { id: 'arqueos', label: 'Arqueos', icon: Banknote },
+      { id: 'conciliacion', label: 'Conciliación', icon: TrendingUp },
+    ],
+  },
+  {
+    section: 'Marketing',
+    items: [
+      { id: 'qrs', label: 'Códigos QR', icon: QrCode },
+      { id: 'analytics', label: 'Analytics', icon: PieChart },
+    ],
+  },
+  {
     section: 'RRHH',
     items: [
       { id: 'planilla', label: 'Planilla', icon: ClipboardList },
+    ],
+  },
+  {
+    section: 'Reportes',
+    items: [
+      { id: 'reportes', label: 'Reportes', icon: BarChart3 },
     ],
   },
   { id: 'configuracion', label: 'Configuración', icon: Settings, bottom: true },
@@ -56,12 +113,33 @@ const breadcrumbMap = {
   compras: 'Compras',
   proveedores: 'Proveedores',
   planilla: 'Planilla',
+  recetas: 'Recetas',
+  mesas: 'Mapa de Mesas',
+  pedidos: 'Pedidos',
+  cocina: 'Cocina KDS',
+  caja: 'Caja',
+  cierrez: 'Cierres Z/X',
+  'menu-engineering': 'Menú Engineering',
+  'menu-digital': 'Menú Digital',
+  asientos: 'Asientos Contables',
+  gastos: 'Gastos',
+  arqueos: 'Arqueos',
+  conciliacion: 'Conciliación',
+  qrs: 'Códigos QR',
+  analytics: 'Analytics',
+  reportes: 'Reportes',
   configuracion: 'Configuración',
 }
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(true)
+
+  useEffect(() => {
+    const handler = (e) => setCurrentPage(e.detail)
+    window.addEventListener('navigate', handler)
+    return () => window.removeEventListener('navigate', handler)
+  }, [])
 
   const renderPage = () => {
     switch (currentPage) {
@@ -75,6 +153,21 @@ export default function App() {
       case 'ventas': return <Ventas />
       case 'compras': return <Compras />
       case 'planilla': return <Planilla />
+      case 'recetas': return <Recetas />
+      case 'mesas': return <Mesas />
+      case 'pedidos': return <Pedidos />
+      case 'cocina': return <Cocina />
+      case 'caja': return <Caja />
+      case 'menu-engineering': return <MenuEngineering />
+      case 'menu-digital': return <MenuDigital />
+      case 'cierrez': return <CierreZ />
+      case 'asientos': return <Asientos />
+      case 'gastos': return <Gastos />
+      case 'arqueos': return <Arqueos />
+      case 'conciliacion': return <Conciliacion />
+      case 'qrs': return <QRs />
+      case 'analytics': return <Analytics />
+      case 'reportes': return <Reportes />
       default: return <Dashboard />
     }
   }

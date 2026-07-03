@@ -1,39 +1,50 @@
-export const TIPOS_DOCUMENTO_FE = {
-  FACTURA: '01',
-  NC: '02',
-  ND: '03',
-  TICKET: '04',
-};
+export const TIPOS_DOCUMENTO_FE = [
+  { value: '01', label: 'Factura de Operación Interna' },
+  { value: '02', label: 'Factura de Exportación' },
+  { value: '03', label: 'Factura de Importación' },
+  { value: '04', label: 'Nota de Crédito' },
+  { value: '05', label: 'Nota de Débito' },
+  { value: '06', label: 'Factura de Reembolso' },
+  { value: '07', label: 'Factura de Zona Franca' },
+];
 
-export const TIPOS_CLIENTE_FE = {
-  CONTRIBUYENTE: '01',
-  CONSUMIDOR_FINAL: '02',
-  EXTRANJERO: '03',
-};
+export const TIPOS_CLIENTE_FE = [
+  { value: '01', label: 'Contribuyente (con RUC)' },
+  { value: '02', label: 'Consumidor Final' },
+  { value: '03', label: 'Gobierno' },
+  { value: '04', label: 'Extranjero' },
+];
 
-export const FORMAS_PAGO_FE = {
-  EFECTIVO: '01',
-  TARJETA_CREDITO: '02',
-  TARJETA_DEBITO: '03',
-  CHEQUE: '04',
-  TRANSFERENCIA: '05',
-  OTRO: '06',
-};
+export const TIPOS_CONTRIBUYENTE = [
+  { value: '1', label: 'Persona Natural' },
+  { value: '2', label: 'Persona Jurídica' },
+];
+
+export const FORMAS_PAGO_FE = [
+  { value: '02', label: 'Efectivo' },
+  { value: '03', label: 'Tarjeta de crédito' },
+  { value: '04', label: 'Tarjeta de débito' },
+  { value: '05', label: 'Cheque' },
+  { value: '06', label: 'Transferencia / ACH' },
+  { value: '07', label: 'Vale' },
+  { value: '08', label: 'Yappy / Nequi' },
+  { value: '99', label: 'Otro' },
+];
+
+export const TIEMPOS_PAGO = [
+  { value: '1', label: 'Contado' },
+  { value: '2', label: 'Crédito / Plazo' },
+  { value: '3', label: 'Mixto' },
+];
 
 export const TASAS_ITBMS_FE = [
-  { codigo: '01', descripcion: 'ITBMS 7%', porcentaje: 7 },
-  { codigo: '02', descripcion: 'ITBMS 0% (Exento)', porcentaje: 0 },
-  { codigo: '03', descripcion: 'ITBMS 10%', porcentaje: 10 },
-  { codigo: '04', descripcion: 'ITBMS 5%', porcentaje: 5 },
+  { value: '00', label: 'Exento (0%)' },
+  { value: '01', label: 'Estándar (7%)' },
+  { value: '02', label: 'Hospedaje/Bebidas (10%)' },
+  { value: '03', label: 'Tabaco (15%)' },
 ];
 
 export const AMBIENTES_HKA = {
-  DEMO: {
-    baseUrl: 'https://demointegracion.thefactoryhka.com.pa',
-    descripcion: 'Ambiente de pruebas DGI',
-  },
-  PROD: {
-    baseUrl: 'https://integracion.thefactoryhka.com.pa',
-    descripcion: 'Ambiente de producción DGI',
-  },
+  DEMO: 'https://demointegracion.thefactoryhka.com.pa',
+  PROD: 'https://integracion.thefactoryhka.com.pa',
 };

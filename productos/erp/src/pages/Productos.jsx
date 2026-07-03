@@ -91,7 +91,7 @@ export default function Productos() {
                   <td className="px-3 py-2.5">
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-brand-50 text-brand">{prod.categoria}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right font-medium">Q {prod.precio.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right font-medium">$ {prod.precio.toLocaleString()}</td>
                   <td className="px-3 py-2.5 text-right">
                     <span className={`font-medium ${prod.stock < 10 ? 'text-red-600' : 'text-gray-900'}`}>{prod.stock}</span>
                   </td>

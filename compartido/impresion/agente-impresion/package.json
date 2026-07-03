@@ -1,0 +1,20 @@
+{
+  "name": "gens-print-agent",
+  "version": "1.0.0",
+  "description": "Agente local de impresión térmica para GENS. Recibe comandos ESC/POS y los envía a impresoras TCP/IP o Bluetooth.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "build": "pkg . --targets node18-win-x64 --output dist/gens-print-agent.exe"
+  },
+  "bin": "server.js",
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "serialport": "^12.0.0"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  }
+}

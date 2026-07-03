@@ -11,6 +11,9 @@
   "dependencies": {
     "cliente-api": "file:../../compartido/cliente-api",
     "fe-hka-pa": "file:../../compartido/fe-hka-pa",
+    "impresion": "file:../../compartido/impresion",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

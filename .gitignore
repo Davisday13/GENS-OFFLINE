@@ -1,9 +1,11 @@
 node_modules/
 dist/
+public/
 .env
 apks/*.apk
 .DS_Store
 Thumbs.db
+servidor/data/gens.db
 servidor/data/gens.db-shm
 servidor/data/gens.db-wal
 

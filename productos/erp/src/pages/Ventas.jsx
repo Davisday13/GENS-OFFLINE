@@ -84,7 +84,7 @@ export default function Ventas() {
                   <td className="px-3 py-2.5">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${v.tipo === 'Contado' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}>{v.tipo}</span>
                   </td>
-                  <td className="px-3 py-2.5 text-right font-medium">Q {v.monto.toLocaleString()}</td>
+                  <td className="px-3 py-2.5 text-right font-medium">$ {v.monto.toLocaleString()}</td>
                   <td className="px-3 py-2.5 text-center">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${v.estado === 'Completada' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{v.estado}</span>
                   </td>
@@ -144,7 +144,7 @@ export default function Ventas() {
                       </select>
                       <input type="number" className="input-field w-20 text-center" value={item.cantidad} min={1} onChange={e => updateItem(idx, 'cantidad', Number(e.target.value))} />
                       <input type="number" className="input-field w-28 text-right" value={item.precio} onChange={e => updateItem(idx, 'precio', Number(e.target.value))} />
-                      <span className="text-sm font-medium text-gray-900 w-24 text-right">Q {(item.cantidad * item.precio).toLocaleString()}</span>
+                      <span className="text-sm font-medium text-gray-900 w-24 text-right">$ {(item.cantidad * item.precio).toLocaleString()}</span>
                       {form.items.length > 1 && (
                         <button className="p-1.5 text-gray-400 hover:text-red-600" onClick={() => removeItem(idx)}><X className="w-4 h-4" /></button>
                       )}
@@ -159,7 +159,7 @@ export default function Ventas() {
               <div className="flex justify-end pt-2 border-t border-gray-200">
                 <div className="text-right">
                   <p className="text-sm text-gray-500">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">Q {total.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-gray-900">$ {total.toLocaleString()}</p>
                 </div>
               </div>
             </div>

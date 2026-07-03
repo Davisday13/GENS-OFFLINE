@@ -1,7 +1,7 @@
 {
   "name": "fe-hka-pa",
   "version": "1.0.0",
-  "description": "Módulo de Facturación Electrónica DGI Panamá - versión offline simulada",
+  "description": "Módulo reutilizable de Facturación Electrónica DGI Panamá vía The Factory HKA. Sin dependencias.",
   "type": "module",
   "main": "src/index.js",
   "exports": {
@@ -11,5 +11,8 @@
     "./catalogos": "./src/catalogos.js",
     "./helpers": "./src/helpers.js"
   },
-  "private": true
+  "author": "Savante Solutions",
+  "license": "UNLICENSED",
+  "private": true,
+  "keywords": ["facturacion-electronica", "dgi", "panama", "hka", "fe", "cafe"]
 }

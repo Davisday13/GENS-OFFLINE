@@ -1,0 +1,17 @@
+{
+  "name": "impresion",
+  "version": "1.0.0",
+  "description": "Módulo de impresión térmica ESC/POS y motor fiscal offline para GENS",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./escpos": "./src/escpos.js",
+    "./agente": "./src/agenteImpresion.js",
+    "./motorFiscal": "./src/motorFiscal.js",
+    "./formasPago": "./src/formasPago.js",
+    "./utils": "./src/utils.js",
+    "./constants": "./src/constants.js"
+  },
+  "private": true
+}

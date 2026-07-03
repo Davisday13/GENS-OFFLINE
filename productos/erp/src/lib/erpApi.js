@@ -72,4 +72,27 @@ export const erpApi = {
     ventasMes: () => request('/dashboard/ventas-mes'),
     ultimasFacturas: () => request('/dashboard/ultimas-facturas'),
   },
+  recetas: {
+    listar: () => request('/recetas'),
+    obtener: (id) => request(`/recetas/${id}`),
+    crear: (data) => request('/recetas', { method: 'POST', body: JSON.stringify(data) }),
+    actualizar: (id, data) => request(`/recetas/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    eliminar: (id) => request(`/recetas/${id}`, { method: 'DELETE' }),
+    costo: (id) => request(`/recetas/${id}/costo`),
+    producir: (id, data) => request(`/recetas/${id}/producir`, { method: 'POST', body: JSON.stringify(data) }),
+    categorias: {
+      listar: () => request('/recetas/categorias'),
+      crear: (data) => request('/recetas/categorias', { method: 'POST', body: JSON.stringify(data) }),
+    },
+    menuEngineering: () => request('/recetas/dashboard/menu-engineering'),
+    vincularPos: (data) => request('/recetas/vincular-pos', { method: 'POST', body: JSON.stringify(data) }),
+    desvincularPos: (id) => request(`/recetas/vincular-pos/${id}`, { method: 'DELETE' }),
+  },
+  cierresZ: {
+    listar: () => request('/pos/cierres'),
+    contCierres: () => request('/contabilidad/cierres'),
+  },
+  produccion: {
+    historial: (recetaId) => request(`/recetas/historial/${recetaId}`),
+  },
 }

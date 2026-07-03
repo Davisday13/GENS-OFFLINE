@@ -19,9 +19,14 @@
     "servidor",
     "compartido/fe-hka-pa",
     "compartido/cliente-api",
+    "compartido/impresion",
     "productos/contabilidad",
     "productos/pos",
     "productos/erp",
     "productos/engage"
-  ]
+  ],
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "sql.js": "^1.14.1"
+  }
 }
