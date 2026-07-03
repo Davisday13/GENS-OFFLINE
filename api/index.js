@@ -49,7 +49,8 @@ try {
 'contabilidad_arqueos|'+`CREATE TABLE IF NOT EXISTS contabilidad_arqueos (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT, monto_sistema REAL DEFAULT 0, monto_contado REAL DEFAULT 0, diferencia REAL DEFAULT 0, observaciones TEXT, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
 'contabilidad_conciliacion|'+`CREATE TABLE IF NOT EXISTS contabilidad_conciliacion (id INTEGER PRIMARY KEY AUTOINCREMENT, fecha TEXT, tipo TEXT DEFAULT 'banco', descripcion TEXT, monto REAL DEFAULT 0, estado TEXT DEFAULT 'pendiente', creado_en TEXT DEFAULT (datetime('now','localtime')))`,
 'engage_qrs|'+`CREATE TABLE IF NOT EXISTS engage_qrs (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, url_destino TEXT, color TEXT DEFAULT '#003153', escaneos INTEGER DEFAULT 0, activo INTEGER DEFAULT 1, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
-'engage_menu_items|'+`CREATE TABLE IF NOT EXISTS engage_menu_items (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, descripcion TEXT, precio REAL DEFAULT 0, categoria TEXT DEFAULT 'General', disponible INTEGER DEFAULT 1, creado_en TEXT DEFAULT (datetime('now','localtime')))`
+'engage_menu_items|'+`CREATE TABLE IF NOT EXISTS engage_menu_items (id INTEGER PRIMARY KEY AUTOINCREMENT, nombre TEXT, descripcion TEXT, precio REAL DEFAULT 0, categoria TEXT DEFAULT 'General', disponible INTEGER DEFAULT 1, creado_en TEXT DEFAULT (datetime('now','localtime')))`,
+'facturas_fiscales|'+`CREATE TABLE IF NOT EXISTS facturas_fiscales (id INTEGER PRIMARY KEY AUTOINCREMENT, numero TEXT, cliente TEXT DEFAULT 'Consumidor Final', ruc TEXT, fecha TEXT, subtotal REAL DEFAULT 0, itbms REAL DEFAULT 0, total REAL DEFAULT 0, estado TEXT DEFAULT 'emitida', cufe TEXT, created_at TEXT DEFAULT (datetime('now','localtime')))`
   ].forEach(spec => {
     const parts = spec.split('|');
     try { db.exec(parts[1]); if (parts[2]) db.exec(parts[2]); } catch (e) { console.error('Seed fail for', parts[0], e.message); }
@@ -161,6 +162,18 @@ app.get('/api/pos/pedidos/ventas-semana', authMw, (req, res) => {
 app.get('/api/pos/facturas/recientes', authMw, (req, res) => {
   if (!db) return res.json([]);
   res.json(db.prepare('SELECT f.*, m.nombre as mesa FROM facturas f JOIN pos_pedidos p ON f.pedido_id = p.id JOIN pos_mesas m ON p.mesa_id = m.id ORDER BY f.creado_en DESC LIMIT 10').all());
+});
+app.get('/api/pos/facturas', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM facturas_fiscales ORDER BY created_at DESC').all());
+});
+app.post('/api/pos/facturas', authMw, (req, res) => {
+  if (!db) return res.status(500).json({ error: 'DB off' });
+  const { cliente, ruc, fecha, total, itbms } = req.body;
+  const numero = `F-${Date.now().toString(36).toUpperCase()}`;
+  const cufe = require('crypto').randomBytes(16).toString('hex').toUpperCase();
+  const r = db.prepare('INSERT INTO facturas_fiscales (numero, cliente, ruc, fecha, subtotal, itbms, total, cufe) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run(numero, cliente||'Consumidor Final', ruc||'', fecha, (total||0)-(itbms||0), itbms||0, total||0, cufe);
+  res.json({ id: r.lastInsertRowid, numero, cufe });
 });
 app.get('/api/pos/cierres', authMw, (req, res) => {
   if (!db) return res.json([]);
@@ -314,6 +327,10 @@ app.get('/api/erp/dashboard', authMw, (req, res) => {
 app.get('/api/ventas', authMw, (req, res) => {
   if (!db) return res.json([]);
   res.json(db.prepare('SELECT * FROM facturas ORDER BY creado_en DESC').all());
+});
+app.get('/api/ventas/facturas', authMw, (req, res) => {
+  if (!db) return res.json([]);
+  res.json(db.prepare('SELECT * FROM facturas_fiscales ORDER BY created_at DESC').all());
 });
 
 // Compras
